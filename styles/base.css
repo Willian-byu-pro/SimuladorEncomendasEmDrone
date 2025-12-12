@@ -190,7 +190,7 @@ button:hover {
 }
 
 #inputPriority{
-  background-color: var(--muted);
+  background: rgba(108, 105, 105, 0.5) ;
 }
 
 /**************************************footer***********************************************/
