@@ -20,7 +20,7 @@ class Drone {
     this.maxWeight = Number(maxWeight);
     this.maxDistanceKm = Number(maxDistanceKm);
     this.remainingWeight = Number(maxWeight);
-    this.assignedOrders = [];
+    this.assignedOrders = []; // manter histórico/seqüência de IDs atribuídos
     this.image = image;
     // novos campos
     this.battery = 100.0;                 // % de bateria (100 = cheio)
@@ -46,9 +46,22 @@ class Drone {
 
   // registra um pedido como "alocado" no drone (mantém assignedOrders)
   assign(order) { //cada drone posssuira uma lista de ordem individual por simulação de acordo com os parametros de sua capacidade
-    this.assignedOrders.push(order);
+    // *** PATCH: tornar assign() robusto e seguro contra NaN/strings ***
+    const w = Number(order.weight) || 0;
+    // evita duplicata na lista de alocados (mantemos histórico sem repetições)
+    if (!this.assignedOrders.find(x => x.id === order.id)) {
+      this.assignedOrders.push(order);
+    }
     
-    this.remainingWeight -= order.weight; // diminuímos a "capacidade temporária" enquanto monta a viagem - atualiza  a capacidade de peso do drone
+    this.remainingWeight = Number(this.remainingWeight) - w; // diminuímos a "capacidade temporária" enquanto monta a viagem - atualiza  a capacidade de peso do drone
+
+    // proteção: não deixar negativo nem NaN
+    if (!isFinite(this.remainingWeight) || this.remainingWeight < 0) {
+      this.remainingWeight = 0;
+    }
+
+    // log útil para debug
+    console.log(`[assign] Drone ${this.id} atribuído ${order.id} (${w}kg). remainingWeight=${this.remainingWeight}`);
   }
 
 
@@ -61,15 +74,12 @@ class Drone {
     tripOrders.forEach(o => {
       o.assigned = true;
       o.deliveredAt = Date.now();
-      // garante que o pedido está listado em assignedOrders para a UI
+      // garante que o pedido está listado em assignedOrders para a UI (se ainda não estiver)
       if (!this.assignedOrders.find(x => x.id === o.id)) {
         this.assignedOrders.push(o);
       }
     });
 //****************************************//********************************
-
-
-
 
 
 
@@ -80,8 +90,9 @@ class Drone {
     // salva viagem simples no histórico
     this.trips.push({ orders: tripOrders.map(o => o.id), distanceKm: estDistanceKm, when: Date.now() });
 
-    // reset capacidade para próxima viagem (assumimos que volta ao hub entre viagens)
-    this.remainingWeight = this.maxWeight;
+ 
+
+    console.log(`[doTrip] Drone ${this.id} fez viagem ${estDistanceKm}km. bateria=${this.battery.toFixed(1)}%. remainingWeight apos viagem=${this.remainingWeight}`);
   }
 }
 
@@ -114,10 +125,7 @@ function getOrders() {
 
 
 
-
-
-
-// ---------- Carregamento dos drones (async) ---------- 
+ // ---------- Carregamento dos drones (async) ---------- 
 //Esta parte carrega os dados e informaçoes dos drones disponiveis
 async function loadDrones() {
   try {
@@ -138,7 +146,8 @@ async function loadDrones() {
       const pMaxWeight = document.createElement('p'); pMaxWeight.textContent = `Capacidade Máx: ${d.maxWeight}Kg`;
       const pMaxDistance = document.createElement('p'); pMaxDistance.textContent = `Autonomia: ${d.maxDistanceKm}Km`;
       const status = document.createElement('p'); status.classList.add('drone-status');
-      status.textContent = `Espaço Restante: ${d.remainingWeight}Kg | Pedidos: ${d.assignedOrders.length}`;
+      // MOSTRA A CAPACIDADE ATUAL (persistente) e A LISTA DE PEDIDOS ATRIBUÍDOS (para ver sequência/prioridade)
+      status.innerHTML = `Carga atual: ${d.remainingWeight.toFixed(2)} Kg <br> Pedidos: ${d.assignedOrders.length ? d.assignedOrders.map(o => o.id).join(', ') : '—'}`;
       if (d.image) card.appendChild(img);
       card.appendChild(title);
       card.appendChild(pMaxWeight);
@@ -161,10 +170,15 @@ function updateDroneStatus(drones) {
   if (!container) return;
 
   const cards = container.querySelectorAll('.drone');
+  // debug / checagem da correspondência entre drones e cards
+  console.log('[updateDroneStatus] dronesList.length=', drones.length, 'cards.length=', cards.length);
 
   drones.forEach((drone, idx) => {
     const card = cards[idx];
-    if (!card) return;
+    if (!card) {
+      console.warn(`[updateDroneStatus] card não encontrado para drone idx=${idx} id=${drone.id}`);
+      return;
+    }
     let status = card.querySelector('.drone-status');
     if (!status) {
 
@@ -173,8 +187,20 @@ function updateDroneStatus(drones) {
       card.appendChild(status);
     }
     // mostra carga, pedidos alocados (ids), bateria e número de viagens
-    const pedidosText = drone.assignedOrders.length ? drone.assignedOrders.map(o => o.id).join(', ') : '—'; //operador ternário (Usei IA para aprender a logica por tras deste operador)
-    status.textContent = `Carga restante: ${drone.remainingWeight.toFixed(2)} Kg | Pedidos: ${pedidosText} | Bateria: ${drone.battery.toFixed(1)}% | Viagens: ${drone.trips.length}`;
+    //(lista de IDs) — mantém histórico dos pedidos atribuídos
+    const pedidosText = drone.assignedOrders.length ? drone.assignedOrders.map(o => o.id).join(', ') : '—';
+
+ 
+    const rem = Number.isFinite(drone.remainingWeight) ? drone.remainingWeight : 0;
+
+    status.innerHTML = `
+      Carga disponivel: ${rem.toFixed(2)} Kg
+      <br>
+      Pedidos: ${pedidosText}
+      <br>
+      Bateria: ${drone.battery.toFixed(1)}% | Viagens: ${drone.trips.length}
+    `;
+    console.log(`[updateDroneStatus] ${drone.id} -> rem=${rem}`);
   });
 }
 
@@ -205,19 +231,10 @@ function renderOrdersTable() {
 
 
 
-
-// ---------- simulateDistribution (agrupa pedidos por viagem - versão corrigida) ----------
+// ---------- simulateDistribution (persistente: não reseta remainingWeight automaticamente) ----------
 function simulateDistribution() {
   const drones = getDrones();
   const orders = getOrders().slice(); // copia lista
-
-  // reset básico dos drones
-  drones.forEach(d => {
-    d.assignedOrders = [];
-    d.remainingWeight = d.maxWeight;
-    d.trips = [];
-    d.battery = 100.0; // começa cheia a simulação
-  });
 
   // pedidos pendentes (objetos Order)
   const pending = orders.filter(o => !o.assigned);
@@ -240,43 +257,61 @@ function simulateDistribution() {
   // para cada drone, tentamos criar viagens enquanto houver pedidos encaixáveis
   for (const drone of drones) {
     let somethingAllocated = true;
+
     while (somethingAllocated) {
       somethingAllocated = false;
+
+      // pega apenas pedidos ainda não entregues
       const remaining = pending.filter(o => !o.assigned);
       if (remaining.length === 0) break;
 
       // montar uma viagem greedy
-      let capLeft = drone.maxWeight;
+
+      let capLeft = drone.remainingWeight;
       const tripGroup = [];
 
       for (const order of remaining) {
-        if (order.assigned) continue;
-        if (order.weight > capLeft) continue;
+        if (order.assigned) continue;                 // já entregue
+        if (order.weight > capLeft) continue;         // não cabe mais na capacidade restante
 
         const trialGroup = tripGroup.concat([order]);
         const estDist = estTripDistanceKm(trialGroup);
 
+        // checamos bateria e distância
         if (estDist <= drone.maxDistanceKm && drone.hasBatteryFor(estDist)) {
           tripGroup.push(order);
           capLeft -= order.weight;
-          // marcar temporariamente como alocado na capacidade local
+
+          // assign() já diminui remainingWeight e adiciona à lista 
           drone.assign(order);
+
+          // Atualiza UI imediatamente (mostra queda na capacidade)
+          updateDroneStatus(getDrones());
+          renderOrdersTable();
         }
       }
 
+      // se montou viagem, executa
       if (tripGroup.length > 0) {
         const estDist = estTripDistanceKm(tripGroup);
-        // realiza a viagem (marca delivered, consome bateria e histórico)
+
+        // doTrip marca como entregue, consome bateria e guarda histórico
+
         drone.doTrip(tripGroup, estDist);
+
+        // atualizar UI depois da viagem
+        updateDroneStatus(getDrones());
+        renderOrdersTable();
+
         somethingAllocated = true;
       } else {
-        // nenhum pedido coube nessa iteração para esse drone
+        // nenhum pedido coube nessa rodada
         break;
       }
     }
   }
 
-  // atualizar a interface
+  // atualização final
   updateDroneStatus(getDrones());
   renderOrdersTable();
 }
