@@ -111,7 +111,7 @@ número de viagens por drone.
 
 -----------------------------------------------------------------Notas
 
-Parte do código foi revisada com ajuda de IA.
+Todo o código foi revisado e corrigido com ajuda de IA.
 
 A função calcDistance() foi sugerida e ajustada com orientação da IA.
 
