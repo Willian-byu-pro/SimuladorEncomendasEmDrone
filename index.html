@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Simulador de Encomendas em Drone - Processo Seletivo dti - ">
+    <meta name="author" content="Willian Ramos">
+
+    <meta property="og:title" content="Home">
+    <meta property="og:description" content="Home page">
+    <meta property="og:image" content="" >
+    <meta property="org:url" content="" >
+
+
+
+    <title>Entregas por Drones</title>
+
+        <!--Style sheets-->
+    <link rel="stylesheet" href="styles/normalize.css">
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="icon" type="image/png" href="image/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <img src="image/logo.png" alt="logo">
+    </header>
+    <main>
+        <section id="first" class="home" >
+        <div class="card" id="drones"></div>
+        <div class="card">
+            <h2>Fila de Pedidos</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>(x,y)</th>
+                        <th>Peso (Kg)</th>
+                        <th>Prioridade</th>
+                        <th>Entregue</th>
+                        <th>Data da simulação</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                    <!--Preenchida com js para ficar dinamico-->
+                </tbody>
+            </table>
+            <button id="btnSimulate">Simular a distribuição</button>
+
+        </div>
+        </section>
+        <section id="second" class="home" >
+            <div>
+                <h2>Novo Pedido de Entrega</h2>
+                <form id="orderForm">
+                    <label>
+                        Coordenada X:
+                        <input type="number" id="inputX" required />
+                    </label>
+                    <label>
+                        Coordenada Y:
+                        <input type="number" id="inputY" required />
+                    </label>
+                    <label>
+                        Peso do Pacote(Kg):
+                        <input type="number" id="inputWeight" step="0.1" min="0.1" required />
+                    </label>
+                    <label>
+                        Prioridade:
+                        <select id="inputPriority" required>
+                            <option value="high">Alta</option>
+                            <option value="medium">Média</option>
+                            <option value="low">Baixa</option>
+                        </select>
+                    </label>
+                    <button type="submit">Adicionar Pedido</button>
+                </form>
+            </div>
+            <div class="card">dados meteorologicos</div>
+        </section>
+
+    </main>
+    <footer>
+        <p class="copy">&copy;2025 | Willian Ramos | Brazil </p>
+    </footer>
+    <script src="script/base.js"></script>
+</body>
+</html>

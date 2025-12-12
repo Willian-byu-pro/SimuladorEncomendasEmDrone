@@ -1,0 +1,26 @@
+Nome em Inglês | adução/Significado em Português
+_________________________________________________________
+dronesList	 -  lista de drones
+ordersList	- lista de pedidos
+priorityOrder -	ordem de prioridade
+calcDistance - calcular distância
+maxWeight	- peso máximo
+maxDistanceKm -	distância máxima (em km)
+remainingWeight -	peso restante
+assignedOrders	- pedidos atribuídos/alocados
+battery -	bateria
+batteryPerKm -	bateria por km
+trips	- viagens (histórico)
+assign	- atribuir/alocar
+doTrip	- realizar viagem
+canCarry -	pode carregar
+canReachPhysically -	pode alcançar fisicamente
+hasBatteryFor	- tem bateria para
+deliveredAt	- entregue em (horário)
+distFromHub	- distância do hub
+getDrones	- obter drones
+getOrders	- obter pedidos
+loadDrones	- carregar drones
+updateDroneStatus -	atualizar status do drone
+renderOrdersTable	- renderizar tabela de pedidos
+simulateDistribution -	simular distribuição

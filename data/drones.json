@@ -1,0 +1,24 @@
+[
+  {
+    "id": "DJI Mavic 3",
+    "maxWeight": 13,
+    "image": "https://nolugarideal.com.br/wp-content/uploads/2022/05/Design-sem-nome-85.jpg",
+    "maxDistanceKm": 70
+
+  },
+  {
+    "id": "DJI Mavic 3 Pro",
+    "maxWeight": 50,
+    "image": "https://aviacaobrasil.com.br/wp-content/uploads/2018/08/drone-delivery-.jpg",
+    "maxDistanceKm": 55
+
+  },
+  {
+    "id": "DJI Agras T40",
+    "maxWeight": 50,
+    "image": "https://supertoast.pt/wp-content/uploads/2021/11/volodrone_.jpg?_t=1657622288",
+    "maxDistanceKm": 70
+
+  }
+
+]

@@ -1,0 +1,204 @@
+:root {
+  --primary: rgb(0, 0, 102); /**30%**/
+  --secondary: rgb(250,109,58); /**20%**/
+  --background: #ffffff;/**70%**/
+  --text: #ffffff;
+  --muted: #6B7280;
+  --accent-contrast: #ffffff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: var(--text);
+}
+
+/* evita overflow lateral inesperado */
+html, body {
+  width: 100%;
+  min-height: 100%;
+  background-color: var(--primary);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x: hidden; /* evita scroll horizontal quando algo vaza */
+}
+
+body {
+  color: var(--text);
+  padding: 0 1rem; /* evita "comer" beirada no mobile */
+}
+
+h1,h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+  color: rgb( 255, 255, 255, 2);
+  
+  
+}
+
+
+
+
+/*********************body************************/
+
+body {
+  color: var(--text);
+  padding: 0 1rem; /* evita "comer" beirada no mobile */
+}
+
+/*********************header**********************/
+
+img{
+    width: 200px;            /* tamanho padronizado */
+    height: 100px;           /* tamanho padronizado */
+    object-fit: cover;      /* mantém proporção sem esticar */
+    border-radius: 8px;     /* opcional, deixa bonitinho */
+    display: block;
+}
+
+
+
+/*********************Main************************/
+
+main {
+    display: grid;
+    justify-content: center;     /* Centraliza horizontalmente */
+    grid-column: 2;/
+
+}
+
+section{
+    margin: 1.25rem 0;
+}
+
+
+.card{
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+    margin: 0 auto;
+    margin-bottom: 1rem; /* garante espaço entre resultados e footer */
+    padding: 1em;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    align-items: center;
+}
+
+.drone{
+  display: flex;
+  padding: 10px;  /* aumenta espaço interno */
+
+}
+
+
+.drone h2, p{
+  padding: 10px 5px;
+}
+
+/**************************Drones*******************************************************************************/
+
+.drone img {
+    width: 80px;            /* tamanho padronizado */
+    height: 80px;           /* tamanho padronizado */
+    object-fit: cover;      /* mantém proporção sem esticar */
+    border-radius: 8px;     /* opcional, deixa bonitinho */
+    display: block;
+    margin: 0 auto;         /* centraliza no card */
+}
+
+
+
+
+
+
+/**************************formulario**************************************************************************/
+
+
+form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+    margin: 0 auto;
+    margin-bottom: 1rem; /* garante espaço entre resultados e footer */
+    padding: 1em;
+    gap: 0.75rem;
+    background: rgba( 255, 255, 255, 0.30);
+    border-radius: 8px;
+  
+}
+
+
+
+
+input, select, textarea {
+    width: 100%; 
+    padding: 0.5em;
+    box-sizing: border-box;
+    border: 1px solid rgba( 255, 255, 255, 0.30);
+    border-radius: 4px;
+    background-color: rgba( 255, 255, 255, 0.30);
+    align-items: center;
+    
+}
+
+label{
+  color: rgba(0, 0, 0, 0.5) 
+
+}
+
+label{
+  color: var(--text);
+}
+
+select{
+  background: rgba( 255, 255, 255, 0.30);
+}
+
+/********************************** pedidos **********************************************/
+
+th, td {
+  padding: 10px 15px;  /* aumenta espaço interno */
+  text-align: center;
+}
+
+th {
+  font-weight: bold;
+  background: rgba(255,255,255,0.2); /* só pra destacá-los */
+}
+
+
+/************************************btn**************************************************/
+
+button{
+  background-color: var(--secondary);
+  padding: 10px 18px;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+
+  /* animação suave */
+  transition: transform 0.2s ease, background-color 0.2s ease;
+
+}
+
+/* animação no hover */
+button:hover {
+  background-color: #1e40af;
+  transform: scale(1.05);
+}
+
+#inputPriority{
+  background-color: var(--muted);
+}
+
+/**************************************footer***********************************************/
+
+footer p{
+  color: rgb( 255, 255, 255, 0.5);
+  margin: auto;
+  align-items: center;
+  
+  
+}
