@@ -33,8 +33,8 @@ class Drone {
   }
 
   // checa alcance físico (round trip) sem considerar bateria
-  canReachPhysically(order, baseX = 0, baseY = 0) {
-    const d = calcDistance(baseX, baseY, order.x, order.y); //Calcula a distancia até o pedido
+  canReachPhysically(order, hubX = 0, hubY = 0) {
+    const d = calcDistance(hubX, hubY, order.x, order.y); //Calcula a distancia até o pedido
     return (d * 2) <= this.maxDistanceKm; //Verifica a distancia completa ida e volta.
   }
 
