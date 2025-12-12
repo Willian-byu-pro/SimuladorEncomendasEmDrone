@@ -63,8 +63,15 @@ img{
 main {
     display: grid;
     justify-content: center;     /* Centraliza horizontalmente */
-    grid-column: 2;/
+    grid-column: 2;
 
+}
+
+img, .drone img {
+  max-width: 100%;
+  height: auto;
+  width: auto; /* deixa o tamanho natural, limitado por max-width */
+  display: block;
 }
 
 section{
@@ -91,7 +98,7 @@ section{
 }
 
 
-.drone h2, p{
+.drone h2, .drone p{
   padding: 10px 5px;
 }
 
@@ -157,6 +164,13 @@ select{
 
 /********************************** pedidos **********************************************/
 
+table, th, td {
+  max-width: 100%;
+  word-break: break-word;
+}
+
+
+
 th, td {
   padding: 10px 15px;  /* aumenta espaço interno */
   text-align: center;
@@ -201,4 +215,37 @@ footer p{
   align-items: center;
   
   
+}
+
+
+
+/****************************************desktop***************************************/
+
+@media (min-width: 1024px) {
+  /* abre mais o layout no desktop */
+  body {
+    padding: 0 3rem; /* mais espaço nas laterais só no desktop */
+  }
+
+  /* cards e formulários maiores no desktop */
+  .card, form {
+    max-width: 800px; /* antes era 600px — mais espaço no desktop */
+    padding: 1.25em;
+  }
+
+  /* tabelas podem ocupar mais espaço naturalmente */
+  table {
+    width: 100%;
+    table-layout: auto; /* layout auto no desktop para menos cortes estranhos */
+  }
+
+  th, td {
+    padding: 12px 18px; /* um pouco mais de espaço nas células */
+  }
+
+  /* evita quebrar palavras estranhas demais — mais natural no desktop */
+  table, th, td, .card, form, input, textarea, label {
+    word-break: normal;       
+    white-space: normal;  
+  }
 }

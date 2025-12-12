@@ -22,34 +22,33 @@ class Drone {
     this.remainingWeight = Number(maxWeight);
     this.assignedOrders = [];
     this.image = image;
-
     // novos campos
     this.battery = 100.0;                 // % de bateria (100 = cheio)
     this.batteryPerKm = 1.0;             // porcentagem gasta por km (ajustável)
-    this.trips = [];                     // histórico simples de viagens
+    this.trips = [];                     // histórico simples de viagens - fica vazil por padrão
   }
 
   canCarry(order) {
-    return this.remainingWeight >= order.weight;
+    return this.remainingWeight >= order.weight;  //Verifica se a capacidade do drone é compativel com o peso do pedido.
   }
 
   // checa alcance físico (round trip) sem considerar bateria
-  canReachPhysically(order, hubX = 0, hubY = 0) {
-    const d = calcDistance(hubX, hubY, order.x, order.y);
-    return (d * 2) <= this.maxDistanceKm;
+  canReachPhysically(order, baseX = 0, baseY = 0) {
+    const d = calcDistance(baseX, baseY, order.x, order.y); //Calcula a distancia até o pedido
+    return (d * 2) <= this.maxDistanceKm; //Verifica a distancia completa ida e volta.
   }
 
   // checa se há bateria para uma distância estimada (km)
   hasBatteryFor(distanceKm) {
-    const required = distanceKm * this.batteryPerKm;
-    return this.battery >= required;
+    const required = distanceKm * this.batteryPerKm; //multiplica para saber a autonomia (distancia * 1.0)
+    return this.battery >= required; // o calculo precisa ser menor ou igual ao total da carga do drone 
   }
 
   // registra um pedido como "alocado" no drone (mantém assignedOrders)
-  assign(order) { //cada drone posssuira uma lista de ordem individual por simulação de acordo com os parametros
+  assign(order) { //cada drone posssuira uma lista de ordem individual por simulação de acordo com os parametros de sua capacidade
     this.assignedOrders.push(order);
-    // diminuímos a "capacidade temporária" enquanto monta a viagem - atualiza o a capacidade de peso do drone
-    this.remainingWeight -= order.weight;
+    
+    this.remainingWeight -= order.weight; // diminuímos a "capacidade temporária" enquanto monta a viagem - atualiza  a capacidade de peso do drone
   }
 
 
@@ -95,16 +94,16 @@ class Order {
     this.weight = Number(weight);
     this.priority = priority;
     // novos campos para controle
-    this.assigned = false;
-    this.deliveredAt = null;
+    this.assigned = false; //guarda o estado da entrega sim/não
+    this.deliveredAt = null; //Guarda o estado de quando foi entregue no sistema
   }
 
   distFromHub(hubX = 0, hubY = 0) {
-    return calcDistance(hubX, hubY, this.x, this.y);
+    return calcDistance(hubX, hubY, this.x, this.y); //calcula a distancia
   }
 }
 
-// ---------- Getters (globalmente acessíveis) ----------
+// ---------- Getters (globalmente acessíveis) evita o acesso direto as listas ----------
 function getDrones() {
   return dronesList;
 }
@@ -113,7 +112,13 @@ function getOrders() {
   return ordersList;
 }
 
-// ---------- Carregamento dos drones (async) ----------
+
+
+
+
+
+// ---------- Carregamento dos drones (async) ---------- 
+//Esta parte carrega os dados e informaçoes dos drones disponiveis
 async function loadDrones() {
   try {
     const response = await fetch('./data/drones.json');
@@ -146,10 +151,15 @@ async function loadDrones() {
   }
 }
 
+
+
+
 // ---------- Atualizar visual dos cards (depois de alocar pedidos) ----------
+//estes dados são visiveis ao simular uma distribuição
 function updateDroneStatus(drones) {
   const container = document.getElementById('drones');
   if (!container) return;
+
   const cards = container.querySelectorAll('.drone');
 
   drones.forEach((drone, idx) => {
@@ -157,19 +167,24 @@ function updateDroneStatus(drones) {
     if (!card) return;
     let status = card.querySelector('.drone-status');
     if (!status) {
+
       status = document.createElement('p');
       status.classList.add('drone-status');
       card.appendChild(status);
     }
     // mostra carga, pedidos alocados (ids), bateria e número de viagens
-    const pedidosText = drone.assignedOrders.length ? drone.assignedOrders.map(o => o.id).join(', ') : '—';
+    const pedidosText = drone.assignedOrders.length ? drone.assignedOrders.map(o => o.id).join(', ') : '—'; //operador ternário (Usei IA para aprender a logica por tras deste operador)
     status.textContent = `Carga restante: ${drone.remainingWeight.toFixed(2)} Kg | Pedidos: ${pedidosText} | Bateria: ${drone.battery.toFixed(1)}% | Viagens: ${drone.trips.length}`;
   });
 }
 
-// ---------- Função para desenhar a tabela de pedidos atual (opcional) ----------
+
+
+
+
+// ---------- Função para desenhar a tabela de pedidos atual dinamicamente----------
 function renderOrdersTable() {
-  const tableBody = document.getElementById('ordersTableBody');
+  const tableBody = document.getElementById('ordersTableBody'); 
   if (!tableBody) return;
   tableBody.innerHTML = "";
   ordersList.forEach(order => {
@@ -185,6 +200,11 @@ function renderOrdersTable() {
     tableBody.appendChild(row);
   });
 }
+
+
+
+
+
 
 // ---------- simulateDistribution (agrupa pedidos por viagem - versão corrigida) ----------
 function simulateDistribution() {
